@@ -1,31 +1,64 @@
-import React, {memo, useEffect, useState} from 'react';
-import {CommonPageProps} from './types';
-import {Col, Row} from 'react-bootstrap';
-import {useParams} from 'react-router-dom';
-import {ContactDto} from 'src/types/dto/ContactDto';
-import {GroupContactsDto} from 'src/types/dto/GroupContactsDto';
-import {GroupContactsCard} from 'src/components/GroupContactsCard';
-import {Empty} from 'src/components/Empty';
-import {ContactCard} from 'src/components/ContactCard';
+// react
+import { memo, useLayoutEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
-export const GroupPage = memo<CommonPageProps>(({
-  contactsState,
-  groupContactsState
-}) => {
-  const {groupId} = useParams<{ groupId: string }>();
-  const [contacts, setContacts] = useState<ContactDto[]>([]);
+// react-bootstrap
+import { Col, Row } from "react-bootstrap";
+
+// types
+import { ContactDto } from "src/types/dto/ContactDto";
+import { GroupContactsDto } from "src/types/dto/GroupContactsDto";
+
+// components
+import { GroupContactsCard } from "src/components/GroupContactsCard";
+import { ContactCard } from "src/components/ContactCard";
+import { Empty } from "src/components/Empty";
+
+// store
+import {
+  useGetAllContactsQuery,
+  useGetContactsOfGroupsQuery,
+} from "src/store/ducks/contacts";
+
+// utils
+import { errorHandler } from "src/utils/errorHandler";
+
+export const GroupPage = memo(() => {
+  const { groupId } = useParams<{ groupId: string }>();
+
+  const [similarContacts, setSimilarContacts] = useState<ContactDto[]>([]);
   const [groupContacts, setGroupContacts] = useState<GroupContactsDto>();
 
-  useEffect(() => {
-    const findGroup = groupContactsState[0].find(({id}) => id === groupId);
+  const {
+    data: contactsState,
+    error: contactsStateError,
+    isLoading: contactsIsLoading,
+  } = useGetAllContactsQuery();
+
+  const { data: groupContactsState, error: groupContactsError } =
+    useGetContactsOfGroupsQuery();
+
+  useLayoutEffect(() => {
+    if (!groupContactsState) return;
+
+    const findGroup = groupContactsState.find(({ id }) => id === groupId);
     setGroupContacts(findGroup);
-    setContacts(() => {
-      if (findGroup) {
-        return contactsState[0].filter(({id}) => findGroup.contactIds.includes(id))
+
+    function getSimilarContacts() {
+      if (findGroup && contactsState) {
+        return contactsState.filter(({ id }) =>
+          findGroup.contactIds.includes(id)
+        );
       }
       return [];
-    });
-  }, [groupId]);
+    }
+
+    setSimilarContacts(() => getSimilarContacts());
+    // eslint-disable-next-line
+  }, [groupId, contactsIsLoading]);
+
+  errorHandler(contactsStateError);
+  errorHandler(groupContactsError);
 
   return (
     <Row className="g-4">
@@ -40,7 +73,7 @@ export const GroupPage = memo<CommonPageProps>(({
           </Col>
           <Col>
             <Row xxl={4} className="g-4">
-              {contacts.map((contact) => (
+              {similarContacts.map((contact) => (
                 <Col key={contact.id}>
                   <ContactCard contact={contact} withLink />
                 </Col>
@@ -48,7 +81,9 @@ export const GroupPage = memo<CommonPageProps>(({
             </Row>
           </Col>
         </>
-      ) : <Empty />}
+      ) : (
+        <Empty />
+      )}
     </Row>
   );
 });

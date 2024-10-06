@@ -1,23 +1,46 @@
-import React, { FC, useEffect, useState } from "react";
-import { CommonPageProps } from "./types";
+// react
+import { useEffect, useState } from "react";
+
+// react-bootstrap
 import { Col, Row } from "react-bootstrap";
+
+// react-router-dom
 import { useParams } from "react-router-dom";
-import { ContactDto } from "src/types/dto/ContactDto";
+
+// components
 import { ContactCard } from "src/components/ContactCard";
 import { Empty } from "src/components/Empty";
 
-export const ContactPage: FC<CommonPageProps> = ({ contactsState }) => {
+// types
+import { ContactDto } from "src/types/dto/ContactDto";
+
+// store
+import { useGetAllContactsQuery } from "src/store/ducks/contacts";
+
+// utils
+import { errorHandler } from "src/utils/errorHandler";
+
+export const ContactPage = () => {
   const { contactId } = useParams<{ contactId: string }>();
-  const [contact, setContact] = useState<ContactDto>();
+
+  const [foundContact, setFoundContact] = useState<ContactDto>();
+
+  const { data: contactsState, error: contactsStateError } =
+    useGetAllContactsQuery();
 
   useEffect(() => {
-    setContact(() => contactsState[0].find(({ id }) => id === contactId));
+    const findContact = contactsState?.find(({ id }) => id === contactId);
+
+    setFoundContact(findContact);
+    // eslint-disable-next-line
   }, [contactId]);
+
+  errorHandler(contactsStateError);
 
   return (
     <Row xxl={3}>
       <Col className={"mx-auto"}>
-        {contact ? <ContactCard contact={contact} /> : <Empty />}
+        {foundContact ? <ContactCard contact={foundContact} /> : <Empty />}
       </Col>
     </Row>
   );
