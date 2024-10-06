@@ -1,9 +1,25 @@
-import { Formik } from "formik";
-import { Button, Col, Form, InputGroup, Row } from "react-bootstrap";
+// react
 import { memo, useRef } from "react";
-import { useAppDispatch, useAppSelector } from "src/store/hooks";
+
+// formik
+import { Formik } from "formik";
+
+// react-bootstrap
+import { Button, Col, Form, InputGroup, Row } from "react-bootstrap";
+
+// types
 import { ContactDto } from "src/types/dto/ContactDto";
-import { actionSetFoundContacts } from "src/store/actions";
+
+// store
+import { useAppDispatch } from "src/store/hooks";
+import {
+  setFoundContacts,
+  useGetAllContactsQuery,
+  useGetContactsOfGroupsQuery,
+} from "src/store/ducks/contacts";
+
+// utils
+import { errorHandler } from "src/utils/errorHandler";
 
 export interface FilterFormValues {
   name: string;
@@ -13,15 +29,18 @@ export interface FilterFormValues {
 export const FilterForm = memo(() => {
   const formInitialValue = useRef({});
 
-  const contactsState = useAppSelector(
-    ({ contactsState }) => contactsState.contacts
-  );
-  const groupContactsList = useAppSelector(
-    ({ contactsState }) => contactsState.groupContacts
-  );
+  const { data: contactsState, error: contactsStateError } =
+    useGetAllContactsQuery();
+
+  const { data: groupContactsList, error: groupContactsListError } =
+    useGetContactsOfGroupsQuery();
+
   const dispatch = useAppDispatch();
 
   const onSubmit = (fv: Partial<FilterFormValues>) => {
+    if (!contactsState) return;
+    if (!groupContactsList) return;
+
     let findContacts: ContactDto[] = contactsState;
 
     if (fv.name) {
@@ -43,8 +62,11 @@ export const FilterForm = memo(() => {
       }
     }
 
-    dispatch(actionSetFoundContacts(findContacts));
+    dispatch(setFoundContacts(findContacts));
   };
+
+  errorHandler(contactsStateError);
+  errorHandler(groupContactsListError);
 
   return (
     <Formik initialValues={formInitialValue.current} onSubmit={onSubmit}>
@@ -70,7 +92,7 @@ export const FilterForm = memo(() => {
                 onChange={handleChange}
               >
                 <option>Open this select menu</option>
-                {groupContactsList.map((groupContacts) => (
+                {groupContactsList?.map((groupContacts) => (
                   <option value={groupContacts.id} key={groupContacts.id}>
                     {groupContacts.name}
                   </option>

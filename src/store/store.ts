@@ -1,11 +1,17 @@
 // redux
-import { combineReducers, createStore } from "redux";
+import { configureStore } from "@reduxjs/toolkit";
+import { setupListeners } from "@reduxjs/toolkit/query";
 
-// reducers
-import { contactsReducers } from "src/store/contactsReducers";
+// ducks
+import contactsReducers, { contactsFetch } from "src/store/ducks/contacts";
 
-const rootReducers = combineReducers({
-  contactsState: contactsReducers,
+export const store = configureStore({
+  reducer: {
+    contactsState: contactsReducers,
+    [contactsFetch.reducerPath]: contactsFetch.reducer,
+  },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(contactsFetch.middleware),
 });
 
-export const store = createStore(rootReducers);
+setupListeners(store.dispatch);

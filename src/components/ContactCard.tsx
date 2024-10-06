@@ -1,7 +1,14 @@
-import React, { memo } from "react";
-import { ContactDto } from "src/types/dto/ContactDto";
-import { Card, ListGroup } from "react-bootstrap";
+// react
+import { memo } from "react";
+
+// react-router-dom
 import { Link } from "react-router-dom";
+
+// react-bootstrap
+import { Card, ListGroup } from "react-bootstrap";
+
+// types
+import { ContactDto } from "src/types/dto/ContactDto";
 
 interface ContactCardProps {
   contact: ContactDto;

@@ -1,12 +1,19 @@
+// react
 import { memo } from "react";
+
+// react-bootstrap
 import { Col, Row } from "react-bootstrap";
+
+// components
 import { ContactCard } from "src/components/ContactCard";
 import { FilterForm } from "src/components/FilterForm";
+
+// store
 import { useAppSelector } from "src/store/hooks";
 
 export const ContactListPage = memo(() => {
   const foundContactsState = useAppSelector(
-    ({ contactsState }) => contactsState.foundContacts
+    (state) => state.contactsState.foundContacts
   );
 
   return (

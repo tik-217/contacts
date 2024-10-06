@@ -1,7 +1,13 @@
-import "./MainApp.scss";
-import { ThemeProvider } from "react-bootstrap";
+// react-router-dom
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+
+// react-bootstrap
+import { ThemeProvider } from "react-bootstrap";
+
+// components
 import { Layout } from "src/components/Layout";
+
+// pages
 import {
   ContactListPage,
   GroupPage,
@@ -9,6 +15,9 @@ import {
   FavoritListPage,
   GroupListPage,
 } from "src/pages";
+
+// styles
+import "./MainApp.scss";
 
 export const MainApp = () => {
   return (

@@ -15,21 +15,27 @@ import { Empty } from "src/components/Empty";
 import { ContactDto } from "src/types/dto/ContactDto";
 
 // store
-import { useAppSelector } from "src/store/hooks";
+import { useGetAllContactsQuery } from "src/store/ducks/contacts";
+
+// utils
+import { errorHandler } from "src/utils/errorHandler";
 
 export const ContactPage = () => {
   const { contactId } = useParams<{ contactId: string }>();
 
   const [foundContact, setFoundContact] = useState<ContactDto>();
-  const contactsState = useAppSelector(
-    ({ contactsState }) => contactsState.contacts
-  );
+
+  const { data: contactsState, error: contactsStateError } =
+    useGetAllContactsQuery();
 
   useEffect(() => {
-    const findContact = contactsState.find(({ id }) => id === contactId);
+    const findContact = contactsState?.find(({ id }) => id === contactId);
 
     setFoundContact(findContact);
+    // eslint-disable-next-line
   }, [contactId]);
+
+  errorHandler(contactsStateError);
 
   return (
     <Row xxl={3}>

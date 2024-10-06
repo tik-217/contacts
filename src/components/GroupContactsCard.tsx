@@ -1,6 +1,13 @@
+// react
 import { memo } from "react";
-import { Card } from "react-bootstrap";
+
+// react-router-dom
 import { Link } from "react-router-dom";
+
+// react-bootstrap
+import { Card } from "react-bootstrap";
+
+// types
 import { GroupContactsDto } from "src/types/dto/GroupContactsDto";
 
 interface GroupContactsCardProps {

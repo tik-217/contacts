@@ -1,7 +1,12 @@
+// react-router-dom
 import { Outlet } from "react-router-dom";
+
+// react-bootstrap
 import { Col, Container, Row } from "react-bootstrap";
-import { MainMenu } from "./MainMenu";
+
+// components
 import { Breadcrumbs } from "src/components/Breadcrumbs";
+import { MainMenu } from "src/components/MainMenu";
 
 export const Layout = () => {
   return (

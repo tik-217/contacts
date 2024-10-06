@@ -1,6 +1,11 @@
-import React, { memo } from "react";
-import { Col, ListGroup, Row } from "react-bootstrap";
+// react
+import { memo } from "react";
+
+// react-router-dom
 import { Link, useLocation } from "react-router-dom";
+
+// react-bootstrap
+import { Col, ListGroup, Row } from "react-bootstrap";
 
 export const Breadcrumbs = memo(() => {
   const location = useLocation();

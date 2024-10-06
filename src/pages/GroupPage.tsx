@@ -1,12 +1,27 @@
+// react
 import { memo, useLayoutEffect, useState } from "react";
-import { Col, Row } from "react-bootstrap";
 import { useParams } from "react-router-dom";
+
+// react-bootstrap
+import { Col, Row } from "react-bootstrap";
+
+// types
 import { ContactDto } from "src/types/dto/ContactDto";
 import { GroupContactsDto } from "src/types/dto/GroupContactsDto";
+
+// components
 import { GroupContactsCard } from "src/components/GroupContactsCard";
-import { Empty } from "src/components/Empty";
 import { ContactCard } from "src/components/ContactCard";
-import { useAppSelector } from "src/store/hooks";
+import { Empty } from "src/components/Empty";
+
+// store
+import {
+  useGetAllContactsQuery,
+  useGetContactsOfGroupsQuery,
+} from "src/store/ducks/contacts";
+
+// utils
+import { errorHandler } from "src/utils/errorHandler";
 
 export const GroupPage = memo(() => {
   const { groupId } = useParams<{ groupId: string }>();
@@ -14,19 +29,23 @@ export const GroupPage = memo(() => {
   const [similarContacts, setSimilarContacts] = useState<ContactDto[]>([]);
   const [groupContacts, setGroupContacts] = useState<GroupContactsDto>();
 
-  const contactsState = useAppSelector(
-    ({ contactsState }) => contactsState.contacts
-  );
-  const groupContactsState = useAppSelector(
-    ({ contactsState }) => contactsState.groupContacts
-  );
+  const {
+    data: contactsState,
+    error: contactsStateError,
+    isLoading: contactsIsLoading,
+  } = useGetAllContactsQuery();
+
+  const { data: groupContactsState, error: groupContactsError } =
+    useGetContactsOfGroupsQuery();
 
   useLayoutEffect(() => {
+    if (!groupContactsState) return;
+
     const findGroup = groupContactsState.find(({ id }) => id === groupId);
     setGroupContacts(findGroup);
 
     function getSimilarContacts() {
-      if (findGroup) {
+      if (findGroup && contactsState) {
         return contactsState.filter(({ id }) =>
           findGroup.contactIds.includes(id)
         );
@@ -35,7 +54,11 @@ export const GroupPage = memo(() => {
     }
 
     setSimilarContacts(() => getSimilarContacts());
-  }, [groupId]);
+    // eslint-disable-next-line
+  }, [groupId, contactsIsLoading]);
+
+  errorHandler(contactsStateError);
+  errorHandler(groupContactsError);
 
   return (
     <Row className="g-4">

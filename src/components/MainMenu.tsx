@@ -1,4 +1,7 @@
+// react
 import React from "react";
+
+// react-bootstrap
 import { Container, Nav, Navbar } from "react-bootstrap";
 
 export const MainMenu = () => {
