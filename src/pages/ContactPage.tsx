@@ -1,17 +1,36 @@
-import React, { FC, useEffect, useState } from "react";
-import { CommonPageProps } from "./types";
-import { Col, Row } from "react-bootstrap";
+// react
+import { FC, useEffect, useState } from "react";
+
+// react-router-dom
 import { useParams } from "react-router-dom";
-import { ContactDto } from "src/types/dto/ContactDto";
+
+// react-bootstrap
+import { Col, Row } from "react-bootstrap";
+
+// components
 import { ContactCard } from "src/components/ContactCard";
 import { Empty } from "src/components/Empty";
 
-export const ContactPage: FC<CommonPageProps> = ({ contactsState }) => {
+// types
+import { ContactDto } from "src/types/dto/ContactDto";
+
+// mobx
+import { observer } from "mobx-react-lite";
+
+// store
+import { contactsStore } from "src/store/contactsStore";
+
+export const ContactPage: FC = observer(() => {
   const { contactId } = useParams<{ contactId: string }>();
+
   const [contact, setContact] = useState<ContactDto>();
+  const contactsState = contactsStore.contacts;
 
   useEffect(() => {
-    setContact(() => contactsState[0].find(({ id }) => id === contactId));
+    const findContact = contactsState.find(({ id }) => id === contactId);
+
+    setContact(() => findContact);
+    // eslint-disable-next-line
   }, [contactId]);
 
   return (
@@ -21,4 +40,4 @@ export const ContactPage: FC<CommonPageProps> = ({ contactsState }) => {
       </Col>
     </Row>
   );
-};
+});
