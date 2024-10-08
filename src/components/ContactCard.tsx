@@ -1,23 +1,22 @@
-import React, {memo} from 'react';
-import {ContactDto} from 'src/types/dto/ContactDto';
-import {Card, ListGroup} from 'react-bootstrap';
-import {Link} from 'react-router-dom';
+// react
+import { memo } from "react";
+
+// react-router-dom
+import { Link } from "react-router-dom";
+
+// react-bootstrap
+import { Card, ListGroup } from "react-bootstrap";
+
+// types
+import { ContactDto } from "src/types/dto/ContactDto";
 
 interface ContactCardProps {
-  contact: ContactDto,
-  withLink?: boolean
+  contact: ContactDto;
+  withLink?: boolean;
 }
 
-export const ContactCard = memo<ContactCardProps>(({
-    contact: {
-      photo,
-      id,
-      name,
-      phone,
-      birthday,
-      address
-    }, withLink
-  }) => {
+export const ContactCard = memo<ContactCardProps>(
+  ({ contact: { photo, id, name, phone, birthday, address }, withLink }) => {
     return (
       <Card key={id}>
         <Card.Img variant="top" src={photo} />
@@ -27,7 +26,11 @@ export const ContactCard = memo<ContactCardProps>(({
           </Card.Title>
           <Card.Body>
             <ListGroup>
-              <ListGroup.Item><Link to={`tel:${phone}`} target="_blank">{phone}</Link></ListGroup.Item>
+              <ListGroup.Item>
+                <Link to={`tel:${phone}`} target="_blank">
+                  {phone}
+                </Link>
+              </ListGroup.Item>
               <ListGroup.Item>{birthday}</ListGroup.Item>
               <ListGroup.Item>{address}</ListGroup.Item>
             </ListGroup>
@@ -36,4 +39,4 @@ export const ContactCard = memo<ContactCardProps>(({
       </Card>
     );
   }
-)
+);
